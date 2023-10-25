@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Currency Converter App</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 0;
+        }
+
+        h1 {
+            text-align: center;
+            background-color: #3498db;
+            color: #fff;
+            padding: 20px;
+            margin: 0;
+        }
+
+        label {
+            font-weight: bold;
+        }
+
+        select, input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        button {
+            background-color: #3498db;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #267bb5;
+        }
+
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .result {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #fff;
+        }
+
+        .history-link {
+            text-decoration: none;
+            color: #3498db;
+            display: block;
+            text-align: center;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+<h1 th:text="#{app.currency}">Currency Converter App</h1>
+
+<div class="container">
+    <form th:action="@{/currency-conversion}" method="post">
+        <label for="fromCurrency">From Currency:</label>
+        <select id="fromCurrency" name="fromCurrency" required>
+            <!-- Add your currency options here -->
+            <option value="INR">INR</option>
+            <option value="USD">USD</option>
+            <!-- Add more options as needed -->
+        </select>
+
+        <div style="margin-top: 20px;"></div>
+
+        <label for="toCurrency">To Currency:</label>
+        <select id="toCurrency" name="toCurrency" required>
+            <!-- Add your currency options here -->
+            <option value="USD">USD</option>
+            <option value="EUR">EUR</option>
+            <!-- Add more options as needed -->
+        </select>
+
+        <div style="margin-top: 20px;"></div>
+
+        <label for="amount">Amount:</label>
+        <input type="text" id="amount" name="amount" required>
+        <span class="error" style="color: red;"></span>
+
+        <div style="margin-top: 20px;"></div>
+
+        <label for="date" style="display: none;">Date:</label>
+        <input type="date" id="date" name="date" style="display: none;">
+
+        <button type="button" onclick="convertCurrency()">Convert</button>
+    </form>
+
+    <div class="result" th:if="${convertedAmount != null}">
+        <p>Converted Amount: <span style="font-weight: bold; color: green;" th:text="${convertedAmount}"></span></p>
+    </div>
+
+    <a th:href="@{/conversion-history}" class="history-link">View Conversion History</a>
+</div>
+
+<script th:inline="javascript">
+    function setMaxDateToToday() {
+        var currentDate = new Date();
+        var day = currentDate.getDate();
+        var month = currentDate.getMonth() + 1; // Months are 0-indexed, so we add 1
+        var year = currentDate.getFullYear();
+
+        if (day < 10) day = '0' + day;
+        if (month < 10) month = '0' + month;
+
+        var formattedDate = year + '-' + month + '-' + day;
+        document.getElementById('date').max = formattedDate;
+    }
+
+    function changeLanguage(selectElement) {
+       var selectedLocale = selectElement.value;
+       var currentUrl = window.location.href;
+       var newUrl = currentUrl.replace(/(\?|&)lang=\w+/, "$1lang=" + selectedLocale);
+       setCookie("local-cookie", selectedLocale, 365);
+       window.location.href = newUrl;
+   }
+
+    function setTodayDate() {
+        var currentDate = new Date();
+        var day = currentDate.getDate();
+        var month = currentDate.getMonth() + 1;
+        var year = currentDate.getFullYear();
+
+        if (day < 10) day = '0' + day;
+        if (month < 10) month = '0' + month;
+
+        var formattedDate = year + '-' + month + '-' + day;
+        document.getElementById('date').value = formattedDate;
+    }
+
+    function convertCurrency() {
+        setTodayDate();
+        document.querySelector('form').submit();
+    }
+
+    setMaxDateToToday();
+</script>
+</body>
+</html>
